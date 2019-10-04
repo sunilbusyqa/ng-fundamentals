@@ -1,0 +1,144 @@
+Angular Pre-requisites:
+
+1. GIT
+2. NVM - Node Version Manager - Helps manage version of node.js
+
+	Windows: Download nvm-setup.zip from https://github.com/coreybutler/nvm-windows/releases/tag/1.1.6
+	Mac/Linux: Run command -> curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash
+
+3. Open GIT Bash as Administrator
+   Install Node v8.11.2
+
+	1. nvm install v8.11.2
+	2. nvm use 8.11.2
+
+If there is a problem installing node, try installing from https://nodejs.org/download/release/v8.11.2/
+
+Create a dev folder under C. Run the following commands
+
+	Windows -> mkdir C:/dev AND cd c:/dev
+	Mac/Linux -> md /Users/<user>/dev AND cd /Users/<user>/dev
+
+4. Angular CLI
+	
+	Best way to start creating Angular project is to use Angular CLI. It is a command line interface to create a new project complete with webpack config and tools for packaging up your app for production, plus a host of other features. It is highly recommended that you always start your projects with the CLI
+
+	npm install -g @angular/cli@7.1.2
+
+	This will install angular cli globally to allow us create multiple projects.
+
+5. Create new project
+
+	ng new ng-fundamentals
+
+6. IDE for development. Preferred are Visual Studio Code OR IntelliJ IDEA
+
+	Visual Studio Code: Download from https://code.visualstudio.com/
+	IntelliJ IDEA: Download from https://www.jetbrains.com/idea/download/download-thanks.html?platform=windows&code=IIC
+
+7. Open the project in the IDE and start coding!
+
+
+angular.json - configuring properties for the project
+e2e - for testing
+node_modules - dependent jars
+src - where code and resources reside
+
+src/app - application code
+src/assets - static resources like images
+
+package.json - defines the dependencies. Download the file from https://github.com/sunilbusyqa/ng-fundamentals/blob/master/package.json and replace the existing file content.
+
+package-lock.json - Download the file from https://github.com/sunilbusyqa/ng-fundamentals/blob/master/package-lock.json and replace the existing file content.
+
+Now, go back to GIT bash console and delete the node_modules and re-install them. Run the following commands:
+
+	cd ng-fundamentals
+	rm -rf node_modules
+	npm install
+
+Now our package versions are locked-in. This will help us work in consistency without any suprises in between due to version updates.
+
+8. Now, it's time to run the project
+
+	npm start
+
+	This should start your application on 4200. Now, open the URL http://localhost:4200 and you should see a full functioning frontend application.
+
+
+Component contains -> component ts file, html file and css file
+
+Bootstraping flow:
+
+	In angular.json, property "main" refers to "src/main.ts". Angular webpack loads the main.ts file.
+	In main.ts file, you can see "bootstrapModule(AppModule)" which lets angular know that there is a module named AppModule that it needs to load
+	In app.module.ts, you can see "bootstrap: [AppComponent]" which tells angular that there is component that it needs to load.
+	In app.component.ts, it has "selector: 'app-root'". this defines the html tag "<app-root>" that can be used to load the template (html file) that is defined as "templateUrl: './app.component.html'".
+	In index.html, you can see "<app-root></app-root>". Angular knows the component has the selector with this name and loads the template in the component.
+
+	So the content that was displayed is the content from app.component.html
+
+
+Convert the current application to Events app - refer to https://www.github.com/sunilbusyqa/ng-fundamentals
+
+Structure of Modules:
+
+1. declarations -> components are declared here
+2. imports -> imports other modules. ex: BrowserModule
+3. providers -> services
+4. bootstrap -> initial loading components
+
+Static resources:
+
+Download sample image files from https://www.github.com/sunilbusyqa/ng-fundamentals into assets folder in the current project.
+
+If you load image in html, you give the location as relative location
+
+Ex: <img src="/assets/images/basic-shield.png"/>
+
+How does angular know this location?
+
+	angular.json file has a property named "assets" which holds all the locations of assets. This helps angular identify the assets we use in our project.
+
+Similarly, there are other properties
+
+	"styles" -> indicate CSS files. Default is "src/styles.css" file
+	"scripts" that indicate the Javascript files we need. For ex: bootstrap js, jquery etc...
+
+Styling:
+
+	Copy the CSS content from https://www.github.com/sunilbusyqa/ng-fundamentals/blob/master/src/styles.css
+	and paste them in your project src/styles.css file
+
+	Bootstrap is a famous CSS library that we can use to leverage the designs. An author named Jim Cooper created a bootstrap node module we can install and use within our project.
+
+	Go to GIT Bash and run the following command:
+
+	npm install ngf-bootstrap --save
+
+	This module downloads the bootstrap css, js files and jquery. We can also download them individually and place them in a folder and use them. The module approach is convenient.
+
+	cd node_modules
+
+	You should find ngf-boostrap, bootstrap and jquery folders
+
+	cd ..
+	npm start
+
+	To use the bootstrap CSS, go to angular.json file and update "styles" and "scripts" as follows
+
+	"styles": [
+		"node_modules/ngf-bootstrap/dist/bootstrap.min.css",
+		"src/styles.css"
+	],
+	"scripts": [
+		"node_modules/jquery/dist/jquery.min.js",
+		"node_modules/bootstrap/dist/js/bootstrap.js"
+	]
+
+	Now restart the server
+
+	Ctrl + C
+	npm start
+
+	You will see the page is displayed differently.
