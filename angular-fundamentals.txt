@@ -142,3 +142,270 @@ Styling:
 	npm start
 
 	You will see the page is displayed differently.
+
+
+Module 2:
+
+Interpolation and Expressions
+Event Bindings and Statements
+Repeating Data With *ngFor
+Removing Elements With *ngIf and *ngSwitch
+Hiding Elements
+Adding Classes and Styles
+
+Expression Restrictions:
+
+	Assignments (=, +=, ++, etc)
+	new Keyword
+	Expression chaining with ;
+	Global namespace
+
+Expression Recommendations:
+
+	No Side-Effects
+	Fast
+	Simple
+	Idempotent
+
+Statement Restrictions
+
+	Assignments (+=, ++, etc)  -> = can be used
+	new Keyword
+	Global namespace
+
+Statement Recommendations:
+
+	Simple
+
+
+
+Let's start by using *ngFor to list multiple events. Currently, we only have one event that we are displaying.
+
+* indicates it's a structural directive. They actually remove the HTML elements or ADD HTML elements.
+
+*ngFor
+
+	structural directive to loop through given elements. It repeates the entire HTML element it is added in.
+	ex: *ngFor="let event of events"
+
+		This loops through events and assigns each values in events to event variable
+
+	i.e., Let's image events have 3 entries. Then using <div *ngFor="let event of events"></div>
+
+		will generate 3 div tags in the HTML page for each element in the event.
+
+
+Let's use bootstrap grid system to display the events in grid. Use row and col classes from bootstrap css to achieve it. To maintain consistency in display, give a min height of 210px to each thumbnail.
+
+*ngIf
+
+	So far if a field within the event object is missing, it is not displayed on the page. However, what if the event object itself is null or undefined. What would happen? The page would not display the event which you may think it's expected. However, the console would throw exceptions such as "Cannot read property ... of undefined". To avoid such issues, we can conditionally display the values using different ways
+
+	1. One way to do it is to define event as optional by adding ? to it everywhere it is used to display it's value.
+
+		ex: <h2>{{event?.name}}</h2>
+
+		However, this process is painful and error prone as we may miss adding the ? somewhere within the code.
+		Especially when the object is multi level object such as event.location.address. In this case, we have to use event?.location?.address
+
+	2. We can use *ngIf to remove an element if it's not needed.
+
+		ex: <div *ngIf="event">
+		ex: <div *ngIf="event?.location">
+
+	If we are hiding and showing the elements frequently based on certain conditions, then *ngIf is not the right choice.
+
+	We can use HTML dom property [hidden] to hide an element
+
+		ex: [hidden]="event?.location"
+
+*ngSwitch
+
+	If we want to show a field based on certain parameter within an object like a switch case, *ngSwitch provides such functionality
+
+	ex:
+		<div [ngSwitch]="event?.time">
+			<span *ngSwitchCase="'8:00 am'">Early Start</span>
+			<span *ngSwitchCase="'10:00 am'">Late Start</span>
+			<span *ngSwitchDefault>Normal Start</span>
+		</div>
+
+ngClass - Conditionally adding CSS
+
+Let's display start time with different color based on time
+
+	1. We can use HTML class binding. ex: <div [class.green]="event?time === '8:00 am'">. In this case we are saying display the css property "green" when the time is equal to '8:00 am'. We should define the "green" css property in our component styles and that should be picked automatically when the condition matches.
+
+		.green { color: #003300 !important; }
+        .bold { font-weight: bold; }
+	
+	If we want to use multiple classes, it will be difficult. This is where ngClass comes into picture
+
+	2. We can use ngClass to add multiple CSS to the HTML element based on multiple conditions mentioned as expressions
+
+	ex: <div [ngClass]="{green: event?.time === '8:00 am', bold: event?.time === '8:00 am'}">
+
+	Since this expression is growing, we can use the help of methods. We can create a method and use that to give css classes.
+
+	ex: <div [ngClass]="getStartTimeClass()">
+
+	getStartTimeClass() {
+        // First way
+        // const isEarlyStart = this.event && this.event.time === '8:00 am'
+        // return {green: isEarlyStart, bold: isEarlyStart}
+
+        // Second way
+        // if (this.event && this.event.time === '8:00 am')
+        //     return 'green bold'
+        // return ''
+
+        // Third way
+        if (this.event && this.event.time === '8:00 am')
+            return ['green', 'bold']
+        return []
+    }
+
+
+ngStyle - Conditionally adding css styles inline
+
+	ex: <div [ngStyle]="{green: event?.time === '8:00 am' ? '#003300' : '#bbb'}"
+
+	We can again optimize this by using method
+
+	ex: <div [ngStyle]="getStartTimeStyle()">
+
+	getStartTimeStyle() {
+        if (this.event && this.event.time === '8:00 am')
+            return { color: '#003300', 'font-weight': 'bold' } // using quote for font-weight as it has - in it's name
+        return {}
+    }
+
+
+
+Angular Services
+
+Currently, events-list.component is responsible for using thumbnail to display the events but also supplying them.
+But ideally, supplying the data should be the responsibility of someone else. That would be SERVICE
+
+Ex:
+
+	class EventsListComponent {
+		events		
+		constructor(private eventService:EventService) {
+			events = eventService.getEvents() // usually we don't make calls in constructor. but that's okay for now
+		}
+	}
+
+
+	Create a EventService as shown below in events/shared folder as event.service.js
+
+	export class EventService {
+	    getEvents() {
+	        return EVENTS
+	    }
+	}
+
+	const EVENTS = [ ... ]
+
+
+	replace the code in EventsListComponent as shown below
+
+	export class EventsListComponent {
+	    events:any[]
+
+	    constructor(private eventService:EventService) {
+	        
+	    }
+
+	    ngOnInit() {
+	        this.events = this.eventService.getEvents()
+	    }
+	}
+
+Let's use some popups to display the messages. For that we can use a third party library named toastr
+
+Install toastr using git bash by running the following commands:
+
+	npm install toastr --save
+
+It will install the CSS and JS file related to toastr. Let's import them and use them
+
+Go to angular.json file and update scripts and styles. It should look like below now:
+
+	"styles": [
+      "node_modules/toastr/build/toastr.min.css",
+      "node_modules/ngf-bootstrap/dist/bootstrap.min.css",
+      "src/styles.css"
+    ],
+    "scripts": [            
+      "node_modules/jquery/dist/jquery.min.js",
+      "node_modules/toastr/build/toastr.min.js",
+      "node_modules/bootstrap/dist/js/bootstrap.js"
+    ]
+
+Let's use toastr and display the event name whenever a thumnail is clicked
+
+Create a ToastrService by creating toastr.service.js in app/common folder
+
+	import { Injectable } from '@angular/core'
+
+	declare let toastr:any
+
+	@Injectable()
+	export class ToastrService {
+	    success(message: string, title?: string) {
+	        toastr.success(message, title)
+	    }
+
+	    info(message: string, title?: string) {
+	        toastr.info(message, title)
+	    }
+
+	    warning(message: string, title?: string) {
+	        toastr.warning(message, title)
+	    }
+
+	    error(message: string, title?: string) {
+	        toastr.error(message, title)
+	    }
+	}
+
+Now register that in app.modules.js under providers and import that EventsListComponent
+
+Now add a click event on event-thumbnail in EventsListComponent as shown below
+
+	<event-thumbnail (click)="handleThumbnailClick(event.name)" ...>
+
+
+EventsListComponent will now look like
+
+	export class EventsListComponent implements OnInit {
+	    events:any[]
+
+	    constructor(private eventService:EventService, private toastr:ToastrService) {
+	        
+	    }
+
+	    ngOnInit() {
+	        this.events = this.eventService.getEvents()
+	    }
+
+	    handleThumbnailClick(eventName) {
+	        this.toastr.success(eventName);
+	    }
+	}
+
+
+Create Event Component
+
+Sample HTML
+
+	<h1>New Event</h1>
+    <hr/>
+    <div class="col-md-6">
+        <h3>[Create Event Form will go here]</h3>
+        <br/>
+        <br/>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-default">Cancel</button>
+    </div>
