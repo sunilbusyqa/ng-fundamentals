@@ -142,3 +142,114 @@ Styling:
 	npm start
 
 	You will see the page is displayed differently.
+
+canActivate, canDeactiavte
+
+Module 3:
+
+Let's learn the following:
+
+1. Route guards. Let's create 404 page if a page does not exist
+2. Route for user. Creating user module and using it in app.module.ts
+3. Demonstrating individual module loading using profile page
+4. Different forms - Template based (login page) and reactive (profile page)
+5. 
+
+
+Resolve - pre checks and post checks after loading a component
+
+routerLinkActive, routerLinkActiveOptions
+
+Independent modules. Ex: User Profile module
+
+Barrels to organize exports
+
+Forms: Template based
+
+	More logic in template. Difficult for complex forms, validations
+
+Model based (reactive forms)
+
+	More logic in component
+
+Let's try Template based forms with login page
+To use template based, we need FormsModule. Import that in your application module
+One way to bind data from form is to use syntax like this
+
+	<input (input)="userName=$event.target.value" ...>
+
+This can be simplified by using ngModel
+
+One way binding is defined as (ngModel)="userName"
+Two way binding is defined as [(ngModel)]="userName". This is called banana box syntax
+
+() are used to represent events, [] are used to represent data
+
+By default, these are fields of the form and so to retrieve these fields, we need to identify the form
+we can do as below
+
+<form #loginForm="ngForm" (ngSubmit)="login(loginForm.value)" autocomplete="off" novalidate>
+
+Here we are naming the form as loginForm and when we submit the form by clicking on save button, we are passing the values of the form to login method in component
+
+Some of the properties you can leverage on a form are
+
+loginForm.valid - all fields are validated
+loginForm.invalid - validation failed
+loginForm.dirty - some values are assigned to the form variables
+loginForm.pristine - form is empty. not even touched. this is usually initial loading state
+loginForm.submitted - form save button clicked
+loginForm.touched - form field touched. even when it is not edited if it is accessed, it is touched
+loginForm.untouched - form field not accessed yet on the page
+
+Lets build a reactive form. this involves creating form in the component and passing it to template.
+HTML page looks pretty similar but the form group is created in the component
+
+Let's use profile page as our reactive form
+
+We need to import ReactiveFormsModule in our app.module.ts
+We create form fields as FormControl in component and FormGroup as the form
+
+ex:
+
+let firstName = new FormControl()
+    let lastName = new FormControl()
+    this.profileForm = new FormGroup({
+      firstName: firstName,
+      lastName: lastName
+    })
+
+To use this formGroup, we add it in the form on HTML page as follows
+
+<form [formGroup]="profileForm" (ngSubmit)="saveProfile(profileForm.value)" autocomplete="off" novalidate>
+
+and we use individual fields as formControlName as shown below
+
+<input formControlName="firstName" id="firstName" type="text" class="form-control" placeholder="First Name..." />
+
+To validate fields, we use Validators. We pass them as second argument in FormControl
+
+ex:
+
+	let firstName = new FormControl(this.authService.currentUser.firstName, Validators.required)
+    let lastName = new FormControl(this.authService.currentUser.lastName, Validators.required)
+
+We can more validators by passing an array of such validators to FormControl
+
+ex:
+
+	let firstName = new FormControl(this.authService.currentUser.firstName, [Validators.required, Validators.pattern('[a-zA-Z.*]')])
+
+Here it is validating to make sure the field always starts with an alphabet
+More validators can be found in angular.io docs -> search Validators
+
+With small forms, template driven is preferrable. However, when more fields are added, reactive forms are useful especially for testing as we can mock the form
+
+
+Let's work more on template driven form. Let's work on create event form
+
+
+
+Content Projection: resuable code that can be used across components
+
+Pipes

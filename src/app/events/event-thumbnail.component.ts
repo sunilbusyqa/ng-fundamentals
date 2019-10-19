@@ -1,10 +1,16 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core'
+import { IEvent } from './shared'
 
 @Component({
     selector: 'event-thumbnail',
     template: `
-        <div [routerLink]="['/events', event.id]" class="well hoverwell thumbnail">
-            <h2>{{event?.name}}</h2>
+    <collapsible-well [title]="">
+        <div well-title>
+            {{event?.name}}
+            <i *ngIf="event?.votes > 3" class="glyphicon glyphicon-fire" style="color:red"></i>
+        </div>
+
+        <div well-body>
             <div>Date: {{event?.date}}</div>
             <div [ngStyle]="getStartTimeStyle()" [ngSwitch]="event?.time">
                 Time: {{event?.time}}
@@ -21,7 +27,9 @@ import { Component, Input, Output, EventEmitter } from '@angular/core'
             <div *ngIf="event?.onlineUrl">
                 <span>Online URL: {{event?.onlineUrl}}</span>
             </div>
+            <div>Votes: {{event?.votes | duration}}</div>
         </div>
+    </collapsible-well>
     `,
     styles: [`
         .thumbnail { min-height: 210px; }
@@ -31,7 +39,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core'
 })
 
 export class EventThumbnailComponent {
-    @Input() event:any
+    @Input() event:IEvent
 
     getStartTimeStyle() {
         if (this.event && this.event.time === '8:00 am')
