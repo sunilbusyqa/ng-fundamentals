@@ -253,3 +253,170 @@ Let's work more on template driven form. Let's work on create event form
 Content Projection: resuable code that can be used across components
 
 Pipes
+
+Communicating with the server using HTTP, Observables, and Rx:
+
+	For this purpose, we use a simple node based server to provide us the required data that we are currently using as static data in our angular project.
+	Install the already created sample server like this:
+
+		npm install ngf-server -S
+		
+		This is going to add ngf-server to node_modules and also add that to our package.json dependencies.
+
+	Now that we installed ngf-server, add a command to start it through our project.
+	In package.json -> scripts, add the following:
+
+		"server": "node node_modules/ngf-server/server.js"
+	
+	This now registers "server" as a command in our project that we can run. To run the server, run the following command
+
+		npm server
+	
+	You can also choose to run it directly as well
+
+	Next thing we need is to tell our angular project that we want it to use the server for all the endpoints that start with "/api"
+	To do that we need to create a proxy configuration file in the root of our project.
+
+	Go ahead and create a file named proxy.conf.json with following content:
+
+		{
+			"/api": {
+				"target": "http://localhost:8808",
+				"secure": false
+			}
+		}
+	
+	Here we are saying that for endpoints starting with "/api", it should call our server that's running on port 8808 and since it's a simple server is it not secure (no authentication)
+
+	To let angular use this proxy, go to package.json, scripts and change the following:
+
+		"start": "ng serve --proxy-config proxy.conf.json"
+	
+	This starts the angular server with proxy configuration
+
+	To use HTTP, we need a new module named "HttpClientModule" from '@angular/common/http'. register that in app.module.js
+	
+	Following are HTTP methods we will use in this course: GET, POST, PUT, DELETE
+
+	For implementation, check event.service.ts and auth.service.ts files
+
+	Remember, the endpoints and returned data totally depend on how you designed your backend. For this course, the server created has following endpoints:
+
+	/api/events
+	/api/events/{id}
+
+	/api/login
+	/api/currentIdentity
+	/api/users/{id}
+	/api/logout
+
+
+Testing Angular projects
+
+	Karma
+	Services
+	Isolated Component Tests
+
+	What is a Unit Test
+		A test of a single "unit" of code.
+
+	Unit Test vs End to End Test
+
+	Unit Test:
+		Fast
+		Involve Isolated Pieces of Code
+
+	End to End Test:
+		Slow
+		Exercises the Entire System
+
+	We are only going to focus on Unit Test
+
+
+	Attributes of good unit test
+
+		Fast
+		Cheap to Write
+		Single State Change
+		Assert 1 Thing
+		Doesn't Cross Process Boundaries
+		Reliable
+	
+
+	Unit Test Structure
+
+	AAA
+		Arrange - prepare code
+		Act	- make a change
+		Assert - test the change
+	
+	Example:
+		Arrange:
+			var user = new User("Sally)
+			user.friends = ["Ralph"]
+		
+		Act:
+			user.addFriend("John")
+
+		Assert:
+			expect(user.friends.length).toBe(2)
+
+	Mocking
+		Helps mock the object when construction is difficult or not possible
+
+		Speed
+		Ease of Testing
+
+		Example if you need to make http call in unit test which we shouldn't, we replace http with it's mock
+	
+	
+	Jamine is the unit testing library
+
+		describe()
+		beforeEach()
+		it()
+		expect()
+		Matchers
+			toBe()
+			toContain()
+			toBeDefined()
+	
+	Karma is command line test runner
+
+		Runs tests in Browser
+		Multiple Browsers
+		Reports
+	
+		In our code, npm test triggers karma and runs the test. By default, no tests are present
+		Default web url to see result is http://localhost:9878
+
+		Karma looks for test.spec.ts under app in our project
+
+		create test.spec.ts and add following code
+
+		describe('testing true', () => {
+			it('should be true', () => {
+				expect(true).toBe(true)
+			})
+		})
+
+		karma should pick the test and show it's a success
+
+	Isolated vs Integrated Tests
+
+	Isolated:
+		Test Class Only - No Template
+		Constructed in Test
+		Simple
+		Best for Services & Pipes
+		Appropriate for Components & Directives
+	
+	Integrated Tests
+		Test Class & Template
+		Constructed by Framework
+		Complex
+		Mainly Used for Components & Directives
+		Deep (multiple levels) or Shallow (one level)
+
+	We created unit test with mock in auth.service.spec.ts file. check it out
+

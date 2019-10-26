@@ -22,14 +22,14 @@ import { IEvent } from './shared';
 })
 
 export class EventsListComponent implements OnInit {
-    events:IEvent[]
+    events:any
 
     constructor(private eventService:EventService, private toastr:ToastrService, private route:ActivatedRoute) {
         
     }
 
     ngOnInit() {
-        this.events = this.eventService.getEvents();
+        this.events = this.route.snapshot.data['events']
     }
 
     handleThumbnailClick(eventName) {

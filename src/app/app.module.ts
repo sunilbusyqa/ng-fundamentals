@@ -7,8 +7,9 @@ import {
   EventService,
   EventDetailsComponent,
   CreateEventComponent,
-  EventRouteActivator,
-  DurationPipe
+  DurationPipe,
+  EventListResolver,
+  EventResolver
 } from './events/index'
 
 import { EventsAppComponent } from './events-app.component'
@@ -20,6 +21,7 @@ import { Error404Component } from './errors/404.component'
 import { AuthService } from './user/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CollapsibleWellComponent } from './common/collapsible-well.component';
+import { HttpClientModule } from '@angular/common/http'
 
 @NgModule({
   declarations: [
@@ -36,12 +38,14 @@ import { CollapsibleWellComponent } from './common/collapsible-well.component';
   imports: [
     BrowserModule,
     RouterModule.forRoot(appRoutes),
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [ 
     EventService,
     ToastrService,
-    EventRouteActivator,
+    EventListResolver,
+    EventResolver,
     AuthService,
     {
       provide: 'canDeactivateCreateEvent',
